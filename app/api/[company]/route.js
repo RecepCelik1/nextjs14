@@ -30,13 +30,23 @@ export const GET = async (request , {params}) => {
 
         exactMatch = itemsArray.some(item => item.company_name === company);
 
-        if (!exactMatch) {
+      if (!exactMatch) {
           const companyWithLimited = company + " LIMITED";
           exactMatch = itemsArray.some(item => item.company_name === companyWithLimited);
       }
        
       if (!exactMatch) {
         const companyWithLtd = company + " LTD";
+        exactMatch = itemsArray.some(item => item.company_name === companyWithLtd);
+      }  
+
+      if (!exactMatch) {
+        const companyWithLtd = company + " (UK) LIMITED";
+        exactMatch = itemsArray.some(item => item.company_name === companyWithLtd);
+      }  
+
+      if (!exactMatch) {
+        const companyWithLtd = company + " (UK) LTD";
         exactMatch = itemsArray.some(item => item.company_name === companyWithLtd);
       }  
 

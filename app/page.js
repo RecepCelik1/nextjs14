@@ -17,7 +17,7 @@ export default function Home() {
 
 
   async function fetchData () {
-    setResult(CompanyName)
+    
     const apiUrl = `http://localhost:3000/api/${CompanyName}`
     try {
       const response = await fetch(apiUrl);
@@ -32,6 +32,8 @@ export default function Home() {
     } catch (error) {
       console.error('Error:', error.message);
     }
+
+    setResult(CompanyName)
   }
   
 
@@ -39,7 +41,7 @@ export default function Home() {
     <main className="bg-gray-800 h-screen flex justify-center items-center">
       <div className="flex flex-col items-center">
 
-          <input className='h-8 p-2 rounded-sm' onChange={(e)=> handleInputChange(e)}></input>
+          <input className='h-8 p-2 rounded-sm' onChange={(e)=> handleInputChange(e)}/>
             <button className={`text-white mt-4 bg-emerald-700 h-8 w-32 rounded-sm
             ${!CompanyName && 'opacity-50 cursor-not-allowed'}`} onClick={fetchData} disabled={!CompanyName}>Check</button>
 
