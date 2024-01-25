@@ -33,10 +33,10 @@ export default function Home() {
     } catch (error) {
       console.error('Error:', error.message);
     }
-
+    
     setResult(CompanyName)
   }
-  
+
 
   return (
     <main className="bg-gray-800 h-screen flex justify-center items-center">
