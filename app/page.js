@@ -16,6 +16,7 @@ export default function Home() {
   }
 
 
+  
   async function fetchData () {
     
     const apiUrl = `http://localhost:3000/api/${CompanyName}`
