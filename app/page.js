@@ -1,31 +1,71 @@
 "use client"
 
-import Link from "next/link";
-import { useState } from "react";
+import React, { useState } from 'react';
+import { FaRegCircleCheck } from "react-icons/fa6";
+import { FaRegCircleXmark } from "react-icons/fa6";
+import { IconContext } from 'react-icons';
 
 
 export default function Home() {
-  const [data , setData] = useState()
+  const [CompanyName , setCompanyName] = useState("")
+  const [dataValue , setDataValue] = useState()
+  const [result , setResult] = useState("")
 
   const handleInputChange = (event) => {
-    const inputData = event.target.value
-    setData(inputData)
+    setCompanyName(event.target.value.toUpperCase())
   }
-  
+
+
   async function fetchData () {
-    let companyData = await fetch('http://localhost:3000/api')
-    companyData = await companyData.json()
-    console.log("company data is equal to : " , companyData)
+    setResult(CompanyName)
+    const apiUrl = `http://localhost:3000/api/${CompanyName}`
+    try {
+      const response = await fetch(apiUrl);
+      if (!response.ok) {
+        throw new Error('API request failed man');
+      }
+
+      let res = await response.json();
+      res = res.exactMatch
+      setDataValue(res)
+
+    } catch (error) {
+      console.error('Error:', error.message);
+    }
   }
   
+
   return (
-    <main className="bg-gray-900 h-screen flex justify-center items-center">
+    <main className="bg-gray-800 h-screen flex justify-center items-center">
       <div className="flex flex-col items-center">
-        <input onChange={(e) => handleInputChange(e) } className="w-48 h-10 p-2"></input>
-        <button className="text-white bg-emerald-800 mt-3 p-1 w-32" onClick={fetchData}>check</button>
+
+          <input className='h-8 p-2 rounded-sm' onChange={(e)=> handleInputChange(e)}></input>
+            <button className={`text-white mt-4 bg-emerald-700 h-8 w-32 rounded-sm
+            ${!CompanyName && 'opacity-50 cursor-not-allowed'}`} onClick={fetchData} disabled={!CompanyName}>Check</button>
+
+
+          {dataValue === false && (
+            <IconContext.Provider value={{ color: "green", className: "global-class-name", size: "2em" }}>
+              <div className='mt-3 flex'>
+                <FaRegCircleCheck />
+                <div className='text-white ml-2 mt-1'>CONGRATULATIONS! {result} IS AVAILABLE</div>
+              </div>
+            </IconContext.Provider>
+                                    )}
+
+
+          {dataValue === true && (
+      
+            <IconContext.Provider value={{ color: "red", className: "global-class-name", size: "2em" }}>
+              <div className='mt-3 flex'>
+                <FaRegCircleXmark />
+                <div className='text-white ml-2 mt-1'>SORRY! {result} IS NOT AVAILABLE</div>
+              </div>
+            </IconContext.Provider>
+                                    )}
+
+
       </div>
-
-
     </main>
   );
 }
