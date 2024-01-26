@@ -4,13 +4,14 @@ export const GET = async (request , {params}) => {
 
     const {company} = params;
     const apiKey = '8dc91acf-5646-4c5d-abef-5524ea035071';
-    const startIndex = 0;
-    const pageSize = 5000;
-    //let allData = [];
-    let exactMatch = false;
+    let startIndex = 0;
+    const pageSize = 500;
     const apiUrlBase = 'https://api.company-information.service.gov.uk/advanced-search/companies';
+    let exactMatch = false;
 
-    const apiUrl = `${apiUrlBase}?company_name_includes=${company}&size=${pageSize}&company_status=active&company_status=open&company_status=liquidation&start_index=${startIndex}`;
+    while(!exactMatch && startIndex <= 9500) {
+      let allData = [];
+      const apiUrl = `${apiUrlBase}?company_name_includes=${company}&size=${pageSize}&start_index=${startIndex}&company_status=active&company_status=open&company_status=liquidation`;
       try {
         const response = await fetch(apiUrl, {
           headers: {
@@ -25,39 +26,51 @@ export const GET = async (request , {params}) => {
   
         const data = await response.json();
         const itemsArray = data.items || [];
-       // const companyNameArray = itemsArray.map(item => item.company_name);
-       // allData = allData.concat(companyNameArray); 
 
-        exactMatch = itemsArray.some(item => item.company_name === company);
+
+      exactMatch = itemsArray.some(item => item.company_name === company);
 
       if (!exactMatch) {
           const companyWithLimited = company + " LIMITED";
-          exactMatch = itemsArray.some(item => item.company_name === companyWithLimited);
+          const companyWithLtd = company + " LTD";
+          exactMatch = itemsArray.some(item => item.company_name === companyWithLimited) || itemsArray.some(item => item.company_name === companyWithLtd);
       }
        
+  
       if (!exactMatch) {
-        const companyWithLtd = company + " LTD";
-        exactMatch = itemsArray.some(item => item.company_name === companyWithLtd);
-      }  
+        
+        const companyNameArray = itemsArray.map(item => item.company_name); 
+        allData = companyNameArray.map(companyName => companyName.replace(/\([^)]*\)/g, '').replace(/\s{2,}/g, ' ').trim());
 
-      if (!exactMatch) {
-        const companyWithLtd = company + " (UK) LIMITED";
-        exactMatch = itemsArray.some(item => item.company_name === companyWithLtd);
-      }  
+        let withOutBracket = [];
 
-      if (!exactMatch) {
-        const companyWithLtd = company + " (UK) LTD";
-        exactMatch = itemsArray.some(item => item.company_name === companyWithLtd);
-      }  
+        withOutBracket = withOutBracket.concat(allData);
+    
+        exactMatch = withOutBracket.some(item => item === company);
+
+        if(!exactMatch) {
+          const companyWithLimited = company + " LIMITED";
+          const companyWithLtd = company + " LTD";
+          exactMatch = withOutBracket.some(item => item === companyWithLimited) || withOutBracket.some(item => item === companyWithLtd);
+        }
+
+    }
+
+    startIndex = pageSize + startIndex
+    
+    if(startIndex % 500 === 0) {
+      startIndex = startIndex - 1
+    }
 
       } catch (error) {
         console.error('API request error:', error.message);
         exactMatch = false
+        break;
       } 
-
+    }
 
     return NextResponse.json({
       exactMatch,
     })
     
-}
+  }
