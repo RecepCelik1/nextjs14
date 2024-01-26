@@ -15,11 +15,12 @@ export default function Home() {
     setCompanyName(event.target.value.toUpperCase())
   }
 
-
   
   async function fetchData () {
     
-    const apiUrl = `http://localhost:3000/api/${CompanyName}`
+    const ltdRegex = /\bLTD\b|\bLIMITED\b/g;
+    const clearedSTR = CompanyName.replace(ltdRegex, '');
+    const apiUrl = `http://localhost:3000/api/${clearedSTR}`
     try {
       const response = await fetch(apiUrl);
       if (!response.ok) {
@@ -33,7 +34,7 @@ export default function Home() {
     } catch (error) {
       console.error('Error:', error.message);
     }
-    
+    console.log("temiz string :" , clearedSTR)
     setResult(CompanyName)
   }
 

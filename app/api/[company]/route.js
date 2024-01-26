@@ -28,17 +28,14 @@ export const GET = async (request , {params}) => {
         const itemsArray = data.items || [];
 
 
-        exactMatch = itemsArray.some(item => item.company_name === company);
+      exactMatch = itemsArray.some(item => item.company_name === company);
 
       if (!exactMatch) {
           const companyWithLimited = company + " LIMITED";
-          exactMatch = itemsArray.some(item => item.company_name === companyWithLimited);
+          const companyWithLtd = company + " LTD";
+          exactMatch = itemsArray.some(item => item.company_name === companyWithLimited) || itemsArray.some(item => item.company_name === companyWithLtd);
       }
        
-      if (!exactMatch) {
-        const companyWithLtd = company + " LTD";
-        exactMatch = itemsArray.some(item => item.company_name === companyWithLtd);
-      }  
   
       if (!exactMatch) {
         
@@ -53,12 +50,8 @@ export const GET = async (request , {params}) => {
 
         if(!exactMatch) {
           const companyWithLimited = company + " LIMITED";
-          exactMatch = withOutBracket.some(item => item === companyWithLimited);
-        }
-
-        if(!exactMatch) {
           const companyWithLtd = company + " LTD";
-          exactMatch = withOutBracket.some(item => item === companyWithLtd);
+          exactMatch = withOutBracket.some(item => item === companyWithLimited) || withOutBracket.some(item => item === companyWithLtd);
         }
 
     }
