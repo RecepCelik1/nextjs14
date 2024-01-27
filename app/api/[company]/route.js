@@ -10,8 +10,8 @@ export const GET = async (request , {params}) => {
     let exactMatch = false;
 
     while(!exactMatch && startIndex <= 9500) {
-      let allData = [];
-      const apiUrl = `${apiUrlBase}?company_name_includes=${company}&size=${pageSize}&start_index=${startIndex}&company_status=active&company_status=open&company_status=liquidation`;
+      
+      const apiUrl = `${apiUrlBase}?company_name_includes=${company}&size=${pageSize}&start_index=${startIndex}`;
       try {
         const response = await fetch(apiUrl, {
           headers: {
@@ -40,11 +40,11 @@ export const GET = async (request , {params}) => {
       if (!exactMatch) {
         
         const companyNameArray = itemsArray.map(item => item.company_name); 
-        allData = companyNameArray.map(companyName => companyName.replace(/\([^)]*\)/g, '').replace(/\s{2,}/g, ' ').trim());
+        const filteredDatas = companyNameArray.map(companyName => companyName.replace(/\([^)]*\)/g, '').replace(/\s{2,}/g, ' ').trim());
 
         let withOutBracket = [];
 
-        withOutBracket = withOutBracket.concat(allData);
+        withOutBracket = withOutBracket.concat(filteredDatas);
     
         exactMatch = withOutBracket.some(item => item === company);
 
@@ -53,7 +53,25 @@ export const GET = async (request , {params}) => {
           const companyWithLtd = company + " LTD";
           exactMatch = withOutBracket.some(item => item === companyWithLimited) || withOutBracket.some(item => item === companyWithLtd);
         }
+    }
 
+
+      if (!exactMatch) {
+        
+        const companyNameArray = itemsArray.map(item => item.company_name); 
+        const filterUK  = companyNameArray.map(text => text.replace(/\bUK\b/g, '').replace(/\s{2,}/g, ' ').trim());
+
+        let withOutBracket = [];
+
+        withOutBracket = withOutBracket.concat(filterUK);
+    
+        exactMatch = withOutBracket.some(item => item === company);
+
+        if(!exactMatch) {
+          const companyWithLimited = company + " LIMITED";
+          const companyWithLtd = company + " LTD";
+          exactMatch = withOutBracket.some(item => item === companyWithLimited) || withOutBracket.some(item => item === companyWithLtd);
+        }
     }
 
     startIndex = pageSize + startIndex

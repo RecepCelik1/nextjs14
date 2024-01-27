@@ -19,7 +19,7 @@ export default function Home() {
   async function fetchData () {
     
     const ltdRegex = /\bLTD\b|\bLIMITED\b/g;
-    const clearedSTR = CompanyName.replace(ltdRegex, '');
+    const clearedSTR = CompanyName.replace(ltdRegex, '').replace(/\s{2,}/g, ' ').trim();
     const apiUrl = `http://localhost:3000/api/${clearedSTR}`
     try {
       const response = await fetch(apiUrl);
@@ -34,7 +34,6 @@ export default function Home() {
     } catch (error) {
       console.error('Error:', error.message);
     }
-    console.log("temiz string :" , clearedSTR)
     setResult(CompanyName)
   }
 
