@@ -20,7 +20,7 @@ export default function Home() {
     
     const ltdRegex = /\bLTD\b|\bLIMITED\b/g;
     const clearedSTR = CompanyName.replace(ltdRegex, '').replace(/\s{2,}/g, ' ').trim();
-    const apiUrl = `https://nextjs14-ten.vercel.app//api/${clearedSTR}`
+    const apiUrl = `https://nextjs14-ten.vercel.app/api/${clearedSTR}`
     try {
       const response = await fetch(apiUrl);
       if (!response.ok) {
